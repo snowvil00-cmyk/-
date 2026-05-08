@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="HealPath">
+<title>HealPath 🌟</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --pink:#FF6B9D; --purple:#7C5CBF; --sky:#5BC0EB; --green:#6BCB77;
+  --yellow:#FFE66D; --orange:#FF9F43; --mint:#4ECDC4;
+  --bg:#FDF6FF; --card:#fff; --text:#2D1B69; --muted:#9B8EC4;
+  --border:rgba(124,92,191,0.13); --r:18px;
+  --st:env(safe-area-inset-top,0px); --sb:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'Nunito',sans-serif;color:var(--text)}
+#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+
+/* HEADER */
+.hdr{padding:calc(var(--st)+12px) 18px 12px;background:linear-gradient(135deg,#FF6B9D 0%,#7C5CBF 100%);position:relative;overflow:hidden;flex-shrink:0}
+.hdr::before{content:'';position:absolute;top:-30px;right:-20px;width:110px;height:110px;background:rgba(255,255,255,0.07);border-radius:50%}
+.hdr-row{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1}
+.hdr-title{font-size:21px;font-weight:900;color:#fff;letter-spacing:-0.5px}
+.hdr-sub{font-size:11px;color:rgba(255,255,255,0.8);font-weight:600;margin-top:1px}
+.avatar{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;font-size:21px;border:2px solid rgba(255,255,255,0.4)}
+.mode-sw{display:flex;background:rgba(255,255,255,0.15);border-radius:20px;padding:2px;margin-top:9px;position:relative;z-index:1}
+.mode-btn{flex:1;padding:6px 8px;border-radius:18px;border:none;background:none;font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);cursor:pointer;font-family:inherit;transition:all .2s}
+.mode-btn.active{background:rgba(255,255,255,0.92);color:var(--purple)}
+
+/* SCREEN */
+.screen{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:calc(76px + var(--sb))}
+.screen::-webkit-scrollbar{display:none}
+
+/* BOTTOM NAV */
+.bnav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:6px 0 calc(6px + var(--sb));z-index:50}
+.nb{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:3px 10px;border:none;background:none;flex:1}
+.nb-icon{font-size:21px;line-height:1}
+.nb-label{font-size:10px;font-weight:700;color:var(--muted)}
+.nb.active .nb-label{color:var(--purple)}
+.nb-dot{width:4px;height:4px;border-radius:50%;background:var(--pink);display:none}
+.nb.active .nb-dot{display:block}
+
+/* SECTION */
+.sec{padding:14px 18px 0}
+.sec-hdr{display:flex;align-items:center;gap:7px;margin-bottom:10px}
+.sec-hdr h2{font-size:14px;font-weight:800;color:var(--text)}
+.badge{background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px}
+
+/* PROGRESS */
+.prog-wrap{padding:12px 18px 0}
+.prog-labels{display:flex;justify-content:space-between;font-size:11px;font-weight:700;color:var(--muted);margin-bottom:5px}
+.prog-track{height:9px;background:rgba(124,92,191,0.1);border-radius:10px;overflow:hidden}
+.prog-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--pink),var(--purple));transition:width .6s cubic-bezier(.34,1.56,.64,1)}
+
+/* MISSION CARD */
+.mc{background:var(--card);border-radius:var(--r);border:1.5px solid var(--border);padding:13px;margin-bottom:9px;position:relative;overflow:hidden;transition:transform .15s}
+.mc:active{transform:scale(0.98)}
+.mc.done{background:#F9FDF9}
+.mc-shine{position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r) var(--r) 0 0}
+.mc-row{display:flex;align-items:flex-start;gap:11px}
+.mc-icon{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:23px;flex-shrink:0}
+.mc-info{flex:1;min-width:0}
+.mc-name{font-size:14px;font-weight:800;color:var(--text)}
+.mc-time{font-size:11px;color:var(--muted);font-weight:600;margin-top:2px}
+.mc-loc{font-size:11px;color:var(--sky);font-weight:700;margin-top:2px}
+.mc-check{width:33px;height:33px;border-radius:50%;border:2.5px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;flex-shrink:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);background:#fff}
+.mc-check.done{background:var(--green);border-color:var(--green);transform:scale(1.1)}
+.stk-badge{position:absolute;top:9px;right:9px;font-size:21px;animation:popIn .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes popIn{from{transform:scale(0) rotate(-20deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+.mc-actions{display:flex;gap:6px;margin-top:9px}
+.why-btn{flex:1;padding:7px;background:rgba(92,192,235,0.1);color:var(--sky);border:1px solid rgba(92,192,235,0.3);border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit}
+.del-btn{padding:7px 10px;background:rgba(255,107,157,0.08);color:var(--pink);border:1px solid rgba(255,107,157,0.2);border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit}
+.cheer-row{background:linear-gradient(135deg,rgba(255,107,157,.06),rgba(124,92,191,.06));border-radius:11px;padding:7px 10px;margin-top:8px;font-size:11px;color:var(--pink);font-weight:600}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:32px 20px;color:var(--muted)}
+.empty-state .big-emoji{font-size:48px;margin-bottom:10px}
+.empty-state p{font-size:13px;font-weight:600;line-height:1.6}
+.empty-cta{margin-top:14px;display:inline-block;padding:10px 20px;background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;border:none;border-radius:14px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit}
+
+/* CARDS */
+.card{background:var(--card);border-radius:var(--r);border:1.5px solid var(--border);padding:15px;margin-bottom:10px}
+.card-title{font-size:13px;font-weight:800;color:var(--text);margin-bottom:12px}
+
+/* FORM */
+.flabel{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px;display:block;margin-top:10px}
+.flabel:first-child{margin-top:0}
+.finput{width:100%;border:1.5px solid var(--border);border-radius:11px;padding:10px 13px;font-size:14px;font-family:inherit;color:var(--text);background:rgba(124,92,191,0.03);margin-bottom:0}
+.finput:focus{outline:none;border-color:var(--purple)}
+textarea.finput{resize:none}
+.fselect{width:100%;border:1.5px solid var(--border);border-radius:11px;padding:10px 13px;font-size:14px;font-family:inherit;color:var(--text);background:rgba(124,92,191,0.03);-webkit-appearance:none}
+.frow{display:flex;gap:8px}
+.frow>div{flex:1}
+.submit-btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;border:none;border-radius:13px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;margin-top:12px}
+.submit-btn:active{opacity:.9;transform:scale(.99)}
+.submit-btn.secondary{background:linear-gradient(135deg,var(--sky),var(--mint))}
+
+/* ICON PICKER */
+.icon-picker{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.icon-opt{font-size:22px;cursor:pointer;padding:6px;border-radius:10px;background:rgba(124,92,191,0.06);border:2px solid transparent;transition:all .15s;line-height:1}
+.icon-opt.selected{background:rgba(124,92,191,0.15);border-color:var(--purple)}
+
+/* TODAY SCHEDULE QUICK-ADD (parent) */
+.quick-add-wrap{background:linear-gradient(135deg,rgba(255,107,157,.06),rgba(124,92,191,.06));border:1.5px dashed rgba(124,92,191,.25);border-radius:var(--r);padding:14px;margin-bottom:10px;cursor:pointer;text-align:center}
+.quick-add-wrap p{font-size:13px;font-weight:700;color:var(--purple)}
+.quick-add-wrap span{font-size:28px}
+
+/* HOSPITAL CARD */
+.hosp-card{background:linear-gradient(135deg,#2D1B69,#4A3490);border-radius:var(--r);padding:15px;margin-bottom:10px;color:#fff;position:relative;overflow:hidden}
+.hosp-card::before{content:'🏥';position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:44px;opacity:.12}
+.hosp-stats{display:flex;gap:8px;margin-top:11px}
+.hstat{background:rgba(255,255,255,0.12);border-radius:9px;padding:8px;flex:1;text-align:center}
+.hstat-n{font-size:17px;font-weight:900}
+.hstat-l{font-size:10px;color:rgba(255,255,255,.7);font-weight:600;margin-top:1px}
+.live-row{display:flex;align-items:center;gap:5px;margin-top:9px;font-size:11px;color:rgba(255,255,255,.9);font-weight:700}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--yellow);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.3);opacity:.7}}
+
+/* SYNC */
+.sync-card{background:linear-gradient(135deg,#6BCB77,#4ECDC4);border-radius:var(--r);padding:13px;margin-bottom:10px;color:#fff}
+.smember{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.savatar{width:29px;height:29px;border-radius:50%;background:rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:14px}
+
+/* CHEER */
+.cheer-bubble{background:linear-gradient(135deg,rgba(255,107,157,.07),rgba(124,92,191,.07));border:1px solid rgba(255,107,157,.18);border-radius:14px;padding:11px 13px;margin-bottom:8px}
+.cheer-from{font-size:12px;font-weight:800;color:var(--pink);margin-bottom:3px}
+.cheer-msg{font-size:13px;color:var(--text);line-height:1.5}
+.cheer-time{font-size:10px;color:var(--muted);margin-top:3px}
+
+/* CALENDAR */
+.cal-wrap{background:var(--card);border-radius:var(--r);border:1.5px solid var(--border);overflow:hidden;margin-bottom:10px}
+.cal-hdr{display:flex;align-items:center;justify-content:space-between;padding:13px 15px}
+.cal-month{font-size:15px;font-weight:800;color:var(--text)}
+.cal-nav{background:rgba(124,92,191,.08);border:none;border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:13px}
+.cal-dnames{display:grid;grid-template-columns:repeat(7,1fr);padding:0 8px}
+.cal-dname{text-align:center;font-size:10px;font-weight:700;color:var(--muted);padding:3px 0}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);padding:0 8px 12px;gap:2px}
+.cal-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:9px;font-size:12px;font-weight:600;cursor:pointer;position:relative}
+.cal-cell:active{background:rgba(124,92,191,.08)}
+.cal-cell.today{background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;font-weight:800}
+.cal-cell.has-ev::after{content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--purple)}
+.cal-cell.today.has-ev::after{background:rgba(255,255,255,.8)}
+.cal-cell.other{color:var(--muted)}
+
+/* EVENT LIST */
+.ev-item{display:flex;align-items:center;gap:11px;padding:9px 15px;border-bottom:1px solid var(--border);cursor:pointer}
+.ev-item:last-child{border-bottom:none}
+.ev-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.ev-info{flex:1}
+.ev-name{font-size:13px;font-weight:700;color:var(--text)}
+.ev-date{font-size:11px;color:var(--muted);font-weight:600;margin-top:1px}
+.ev-del{font-size:14px;cursor:pointer;color:var(--muted);padding:4px}
+
+/* TABS */
+.tabs{display:flex;background:rgba(124,92,191,.06);border-radius:13px;padding:3px;margin-bottom:13px}
+.tab-btn{flex:1;padding:7px;border-radius:11px;border:none;background:none;font-size:11px;font-weight:700;color:var(--muted);cursor:pointer;font-family:inherit;transition:all .2s}
+.tab-btn.active{background:#fff;color:var(--purple);box-shadow:0 2px 8px rgba(124,92,191,.15)}
+
+/* STICKER */
+.stk-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;padding:11px;background:var(--card);border-radius:var(--r);border:1.5px solid var(--border)}
+.stk-slot{aspect-ratio:1;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:19px;background:rgba(124,92,191,.06)}
+.stk-slot.earned{background:linear-gradient(135deg,rgba(255,107,157,.1),rgba(124,92,191,.1))}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(45,27,105,.5);z-index:100;display:flex;align-items:flex-end;transition:opacity .25s}
+.modal-bg.hidden{opacity:0;pointer-events:none}
+.modal-sheet{background:var(--card);border-radius:26px 26px 0 0;padding:18px 18px calc(18px + var(--sb));max-height:85vh;overflow-y:auto;width:100%}
+.modal-handle{width:38px;height:4px;background:rgba(124,92,191,.2);border-radius:10px;margin:0 auto 16px}
+.modal-emoji{font-size:44px;text-align:center;margin-bottom:10px}
+.modal-title{font-size:17px;font-weight:900;color:var(--text);margin-bottom:8px;text-align:center}
+.modal-body{font-size:13px;color:#555;line-height:1.7;text-align:center}
+.modal-close{width:100%;padding:13px;background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;border:none;border-radius:13px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;margin-top:16px}
+
+/* CONFETTI */
+.confetti-wrap{position:fixed;inset:0;z-index:200;pointer-events:none;overflow:hidden}
+.cp{position:absolute;animation:fall linear forwards}
+@keyframes fall{0%{transform:translateY(-20px) rotate(0);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+
+/* TOAST */
+.toast{position:fixed;top:calc(var(--st)+12px);left:50%;transform:translateX(-50%) translateY(-80px);background:var(--text);color:#fff;padding:9px 18px;border-radius:20px;font-size:12px;font-weight:700;z-index:300;transition:transform .3s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;max-width:88vw;text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+.guide-strip{background:rgba(255,230,109,.2);border:1px solid rgba(255,159,67,.3);border-radius:11px;padding:9px 13px;margin-bottom:10px;display:flex;align-items:center;gap:7px;font-size:12px;color:var(--orange);font-weight:700}
+
+/* HOSPITAL SEARCH */
+.h-search-item{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid var(--border)}
+.h-search-item:last-child{border-bottom:none}
+.h-icon-box{width:38px;height:38px;border-radius:11px;background:rgba(124,92,191,.1);display:flex;align-items:center;justify-content:center;font-size:19px}
+.h-info{flex:1}
+.h-title{font-size:13px;font-weight:700;color:var(--text)}
+.h-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.con-btn{background:rgba(124,92,191,.1);border:none;border-radius:8px;padding:5px 11px;font-size:11px;font-weight:700;color:var(--purple);cursor:pointer;font-family:inherit}
+.con-btn.connected{background:rgba(107,203,119,.15);color:var(--green)}
+
+.fade-in{animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-row">
+    <div>
+      <div class="hdr-title" id="hdr-title">🌟 하준이의 오늘!</div>
+      <div class="hdr-sub" id="hdr-sub">5월 8일 목요일 · 서울어린이병원</div>
+    </div>
+    <div class="avatar">🐻</div>
+  </div>
+  <div class="mode-sw">
+    <button class="mode-btn active" id="btn-child" onclick="setMode('child')">👧 아이 모드</button>
+    <button class="mode-btn" id="btn-parent" onclick="setMode('parent')">👨‍👩 보호자 모드</button>
+  </div>
+</div>
+
+<!-- TODAY SCREEN -->
+<div class="screen" id="scr-today" style="display:block">
+
+  <!-- CHILD VIEW -->
+  <div id="view-child">
+    <div class="prog-wrap">
+      <div class="prog-labels"><span>오늘의 미션 🚀</span><span id="prog-lbl">0/0 완료</span></div>
+      <div class="prog-track"><div class="prog-fill" id="prog-bar" style="width:0%"></div></div>
+    </div>
+    <div class="sec">
+      <div class="guide-strip">💡 <span>✅ 버튼을 누르면 스티커를 받을 수 있어요!</span></div>
+      <div class="sec-hdr"><h2>오늘의 미션 카드</h2><div class="badge" id="today-badge">TODAY</div></div>
+      <div id="mission-list"></div>
+    </div>
+    <div class="sec">
+      <div class="sec-hdr"><h2>받은 응원 💌</h2></div>
+      <div id="cheer-list-child"></div>
+    </div>
+    <div style="height:8px"></div>
+  </div>
+
+  <!-- PARENT VIEW -->
+  <div id="view-parent" style="display:none">
+    <div class="sec fade-in">
+
+      <!-- HOSPITAL STATUS -->
+      <div class="sec-hdr"><h2>병원 연결 상태 🏥</h2></div>
+      <div class="hosp-card">
+        <div style="font-size:15px;font-weight:800">서울어린이병원</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.7);margin-top:3px">소아혈액종양과 · 5층 502호</div>
+        <div class="hosp-stats">
+          <div class="hstat"><div class="hstat-n" id="today-count">0</div><div class="hstat-l">오늘 일정</div></div>
+          <div class="hstat"><div class="hstat-n" id="wait-num">14</div><div class="hstat-l">현재 대기</div></div>
+          <div class="hstat"><div class="hstat-n" id="next-time">-</div><div class="hstat-l">다음 진료</div></div>
+        </div>
+        <div class="live-row"><div class="live-dot"></div>실시간 대기 현황 연동 중</div>
+      </div>
+
+      <!-- TODAY MISSIONS PARENT VIEW -->
+      <div class="sec-hdr"><h2>오늘 미션 관리</h2><div class="badge" id="parent-today-badge">TODAY</div></div>
+      <div id="parent-mission-list"></div>
+
+      <!-- QUICK ADD -->
+      <div class="quick-add-wrap" onclick="openAddModal()">
+        <div class="big-emoji" style="font-size:28px;margin-bottom:4px">➕</div>
+        <p>오늘 일정 바로 추가하기</p>
+      </div>
+
+      <!-- FAMILY SYNC -->
+      <div class="sec-hdr" style="margin-top:4px"><h2>가족 연동 👨‍👩‍👦</h2></div>
+      <div class="sync-card">
+        <div style="font-size:13px;font-weight:800;margin-bottom:9px">🔗 연결된 가족</div>
+        <div id="family-list"></div>
+        <button style="width:100%;padding:8px;background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.4);border-radius:9px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:6px" onclick="showInviteModal()">+ 가족 초대하기</button>
+      </div>
+
+      <!-- DATA RESET -->
+      <div class="sec-hdr" style="margin-top:4px"><h2>앱 데이터 관리 ⚙️</h2></div>
+      <div class="card" style="padding:12px">
+        <div style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:10px;line-height:1.6">
+          💾 모든 일정·스티커·응원 메모는 이 기기에 자동 저장됩니다.<br>
+          아래 버튼으로 전체 초기화할 수 있어요.
+        </div>
+        <button onclick="resetAllData()" style="width:100%;padding:10px;background:rgba(255,107,157,.08);border:1.5px solid rgba(255,107,157,.25);border-radius:11px;color:var(--pink);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">🗑️ 전체 데이터 초기화</button>
+      </div>
+
+      <!-- SEND CHEER -->
+      <div class="sec-hdr"><h2>응원 메모 보내기 💌</h2></div>
+      <div class="card">
+        <label class="flabel">어떤 미션에 응원을?</label>
+        <select class="fselect" id="cheer-target">
+          <option value="all">전체 응원</option>
+        </select>
+        <label class="flabel" style="margin-top:8px">메모 내용</label>
+        <textarea class="finput" id="cheer-input" rows="3" placeholder="예: 오늘도 파이팅! 금방 끝나 🩷"></textarea>
+        <button class="submit-btn" onclick="sendCheer()">💌 응원 보내기</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- CALENDAR SCREEN -->
+<div class="screen" id="scr-calendar" style="display:none">
+  <div class="sec fade-in">
+    <div class="tabs">
+      <button class="tab-btn active" id="tab-cal" onclick="switchCalTab('cal')">📅 달력</button>
+      <button class="tab-btn" id="tab-add" onclick="switchCalTab('add')">➕ 일정 추가</button>
+      <button class="tab-btn" id="tab-hosp" onclick="switchCalTab('hosp')">🏥 병원</button>
+    </div>
+
+    <!-- CALENDAR TAB -->
+    <div id="cal-view">
+      <div class="cal-wrap">
+        <div class="cal-hdr">
+          <button class="cal-nav" onclick="changeMonth(-1)">◀</button>
+          <span class="cal-month" id="cal-label">2025년 5월</span>
+          <button class="cal-nav" onclick="changeMonth(1)">▶</button>
+        </div>
+        <div class="cal-dnames">
+          <div class="cal-dname" style="color:#FF6B9D">일</div>
+          <div class="cal-dname">월</div><div class="cal-dname">화</div>
+          <div class="cal-dname">수</div><div class="cal-dname">목</div>
+          <div class="cal-dname">금</div>
+          <div class="cal-dname" style="color:#5BC0EB">토</div>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+      </div>
+      <div class="sec-hdr"><h2>모든 일정</h2></div>
+      <div id="all-events-wrap"></div>
+    </div>
+
+    <!-- ADD TAB -->
+    <div id="add-view" style="display:none">
+      <div class="card">
+        <div class="card-title">새 치료 일정 추가</div>
+
+        <label class="flabel">아이콘 선택</label>
+        <div class="icon-picker" id="icon-picker-cal">
+          <span class="icon-opt selected" data-icon="💉">💉</span>
+          <span class="icon-opt" data-icon="🩻">🩻</span>
+          <span class="icon-opt" data-icon="💊">💊</span>
+          <span class="icon-opt" data-icon="👨‍⚕️">👨‍⚕️</span>
+          <span class="icon-opt" data-icon="🦴">🦴</span>
+          <span class="icon-opt" data-icon="🔬">🔬</span>
+          <span class="icon-opt" data-icon="🏃">🏃</span>
+          <span class="icon-opt" data-icon="🩺">🩺</span>
+          <span class="icon-opt" data-icon="💧">💧</span>
+          <span class="icon-opt" data-icon="🧬">🧬</span>
+        </div>
+
+        <label class="flabel">치료 / 검사명</label>
+        <input class="finput" id="add-name" placeholder="예: 항암 3차, CT 촬영, 진료...">
+
+        <div class="frow" style="margin-top:10px">
+          <div>
+            <label class="flabel" style="margin-top:0">날짜</label>
+            <input class="finput" type="date" id="add-date">
+          </div>
+          <div>
+            <label class="flabel" style="margin-top:0">시간</label>
+            <input class="finput" type="time" id="add-time">
+          </div>
+        </div>
+
+        <label class="flabel">위치 (층·진료실)</label>
+        <input class="finput" id="add-loc" placeholder="예: 5층 502호, 지하 1층">
+
+        <label class="flabel">아이 설명 (왜 하는지 — 쉽게!)</label>
+        <textarea class="finput" id="add-why" rows="2" placeholder="예: 몸속 사진을 찍는 특별한 카메라야 📸"></textarea>
+
+        <label class="flabel">보호자 메모 (아이에게 안 보여요)</label>
+        <textarea class="finput" id="add-memo" rows="2" placeholder="담당 의사, 주의사항 등"></textarea>
+
+        <button class="submit-btn" onclick="addEventFromForm()">✅ 일정 추가하기</button>
+      </div>
+    </div>
+
+    <!-- HOSPITAL TAB -->
+    <div id="hosp-view" style="display:none">
+      <div class="card">
+        <div class="card-title">🔍 병원 연결</div>
+        <input class="finput" id="hosp-search" placeholder="병원 이름 검색..." oninput="filterHospitals(this.value)" style="margin-bottom:10px">
+        <div id="hosp-results"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">📋 연결 시 사용 가능한 기능</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.9">
+          ✅ 진료 예약 자동 일정 연동<br>
+          ✅ 실시간 대기 번호 확인<br>
+          ✅ 검사 결과 알림 수신<br>
+          ✅ 처방전 및 투약 일정 연동<br>
+          ✅ 다음 예약 알림 자동 발송<br>
+          🔜 EMR 연동 (병원 협약 필요)
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STICKER SCREEN -->
+<div class="screen" id="scr-sticker" style="display:none">
+  <div class="sec fade-in">
+    <div class="sec-hdr"><h2>모은 스티커 🌟</h2></div>
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:11px">
+        <div style="font-size:30px">🏆</div>
+        <div>
+          <div style="font-size:15px;font-weight:900;color:var(--text)">총 <span id="stk-total">7</span>개 모았어요!</div>
+          <div style="font-size:11px;color:var(--muted);font-weight:600">20개 모으면 특별 선물! 🎁</div>
+        </div>
+      </div>
+      <div class="prog-track" style="margin-bottom:5px"><div class="prog-fill" id="stk-prog" style="width:35%"></div></div>
+      <div style="font-size:10px;color:var(--muted);font-weight:700;text-align:right" id="stk-fraction">7/20</div>
+    </div>
+    <div class="sec-hdr"><h2>스티커 앨범</h2></div>
+    <div class="stk-grid" id="stk-grid"></div>
+    <div style="height:10px"></div>
+    <div style="background:linear-gradient(135deg,#FFE66D,#FF9F43);border-radius:var(--r);padding:15px;text-align:center;margin-bottom:10px">
+      <div style="font-size:34px;margin-bottom:5px">🎁</div>
+      <div style="font-size:14px;font-weight:900;color:#fff">스티커 20개 → 특별 선물!</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.8);margin-top:3px" id="stk-remaining">앞으로 13개 더 모으면 돼요</div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bnav">
+  <button class="nb active" id="nav-today" onclick="switchScreen('today')">
+    <div class="nb-dot"></div><div class="nb-icon">🏠</div><div class="nb-label">오늘</div>
+  </button>
+  <button class="nb" id="nav-calendar" onclick="switchScreen('calendar')">
+    <div class="nb-dot"></div><div class="nb-icon">📅</div><div class="nb-label">일정</div>
+  </button>
+  <button class="nb" id="nav-sticker" onclick="switchScreen('sticker')">
+    <div class="nb-dot"></div><div class="nb-icon">⭐</div><div class="nb-label">스티커</div>
+  </button>
+</div>
+</div><!-- /app -->
+
+<!-- ADD MISSION MODAL (quick, for parent today view) -->
+<div class="modal-bg hidden" id="add-modal-bg" onclick="closeAddModal()">
+  <div class="modal-sheet" onclick="event.stopPropagation()" style="max-height:92vh">
+    <div class="modal-handle"></div>
+    <div style="font-size:16px;font-weight:900;color:var(--text);margin-bottom:14px;text-align:center">오늘 일정 추가 ➕</div>
+
+    <label class="flabel" style="margin-top:0">아이콘 선택</label>
+    <div class="icon-picker" id="icon-picker-modal">
+      <span class="icon-opt selected" data-icon="💉">💉</span>
+      <span class="icon-opt" data-icon="🩻">🩻</span>
+      <span class="icon-opt" data-icon="💊">💊</span>
+      <span class="icon-opt" data-icon="👨‍⚕️">👨‍⚕️</span>
+      <span class="icon-opt" data-icon="🦴">🦴</span>
+      <span class="icon-opt" data-icon="🔬">🔬</span>
+      <span class="icon-opt" data-icon="🏃">🏃</span>
+      <span class="icon-opt" data-icon="🩺">🩺</span>
+      <span class="icon-opt" data-icon="💧">💧</span>
+      <span class="icon-opt" data-icon="🧬">🧬</span>
+    </div>
+
+    <label class="flabel">치료 / 검사명</label>
+    <input class="finput" id="modal-name" placeholder="예: 항암 주사, CT 촬영...">
+
+    <label class="flabel">시간</label>
+    <input class="finput" type="time" id="modal-time">
+
+    <label class="flabel">위치 (층·진료실)</label>
+    <input class="finput" id="modal-loc" placeholder="예: 5층 502호">
+
+    <label class="flabel">아이 설명 (왜 하는지 — 쉽게!)</label>
+    <textarea class="finput" id="modal-why" rows="2" placeholder="예: 몸이 잘 낫고 있는지 확인하는 거야 🌟"></textarea>
+
+    <button class="submit-btn" onclick="addTodayMission()">🚀 오늘 미션으로 추가!</button>
+    <button class="submit-btn secondary" onclick="closeAddModal()" style="margin-top:6px">취소</button>
+  </div>
+</div>
+
+<!-- INFO / WHY MODAL -->
+<div class="modal-bg hidden" id="modal-bg" onclick="closeModal()">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-emoji" id="modal-emoji"></div>
+    <div class="modal-title" id="modal-title"></div>
+    <div class="modal-body" id="modal-body"></div>
+    <button class="modal-close" id="modal-close-btn" onclick="closeModal()">알겠어요! ✓</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="confetti-wrap" id="confetti"></div>
+
+<script>
+// ============ STORAGE ============
+const SK = {
+  missions:   'hp_missions',
+  calEvents:  'hp_calEvents',
+  cheers:     'hp_cheers',
+  stickerBag: 'hp_stickerBag',
+  childName:  'hp_childName',
+  lastDate:   'hp_lastDate',
+};
+
+function save(key, val) {
+  try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) {}
+}
+function load(key, fallback) {
+  try {
+    const v = localStorage.getItem(key);
+    return v !== null ? JSON.parse(v) : fallback;
+  } catch(e) { return fallback; }
+}
+function saveAll() {
+  save(SK.missions,   missions);
+  save(SK.calEvents,  calEvents);
+  save(SK.cheers,     cheers);
+  save(SK.stickerBag, stickerBag);
+}
+
+// ============ STATE ============
+// TODAY = real device date
+function getTodayStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+const TODAY_STR = getTodayStr();
+
+let mode = 'child';
+let screen = 'today';
+let calY = new Date().getFullYear();
+let calM = new Date().getMonth();
+let selectedIcon = { modal: '💉', cal: '💉' };
+
+const STICKERS = ['🌈','⭐','🎉','🦋','🌸','🍀','💫','🎈','🌟','✨','🎀','🦄','🌺','🎊','💝','🏆','🎗️','🌙','☀️','🍓'];
+const COLORS = ['#FF6B9D','#5BC0EB','#6BCB77','#FF9F43','#7C5CBF','#4ECDC4','#A88FD4','#FFB347'];
+
+const DEFAULT_WHY = {
+  '💉': { emoji:'💉', title:'피를 조금 빌려줘요!', body:'의사 선생님이 아주 조금 피를 빌려서 현미경으로 봐요. 몸이 잘 낫고 있는지 확인할 수 있어요! 주사 바늘이 잠깐 따끔하지만 금방 끝나요 🌟' },
+  '🩻': { emoji:'🩻', title:'도넛 카메라로 사진 찍어요!', body:'도넛 모양 기계 속에 들어가서 몸속 사진을 찍어요. 전혀 아프지 않고, 침대에 누워 슝~ 하면 끝! 📸' },
+  '💊': { emoji:'💊', title:'약이 몸속에서 싸워줘요!', body:'특별한 약이 몸속으로 들어가서 나쁜 세포랑 싸워줘요. 슈퍼히어로 같은 약이에요! 💪' },
+  '👨‍⚕️': { emoji:'👨‍⚕️', title:'선생님이랑 이야기해요!', body:'검사 결과를 보면서 몸이 얼마나 나아지고 있는지 확인해요. 궁금한 거 뭐든 물어봐도 돼요! 😊' },
+  '🦴': { emoji:'🦴', title:'뼈 안에서 혈액을 만들어요!', body:'뼈 안쪽에서 피가 잘 만들어지고 있는지 확인해요. 잠깐 아플 수 있지만 선생님이 옆에서 도와줄 거예요 🤝' },
+  '🔬': { emoji:'🔬', title:'세포를 자세히 살펴봐요!', body:'몸의 작은 조각을 현미경으로 아주 자세히 살펴봐요. 어떤 세포인지 알 수 있어요 🔭' },
+  '🏃': { emoji:'🏃', title:'몸이 더 건강해지도록 운동해요!', body:'선생님과 함께 특별한 운동을 해요. 몸이 더 튼튼해지고 빨리 나을 수 있어요! 💪' },
+  '🩺': { emoji:'🩺', title:'몸을 꼼꼼히 체크해요!', body:'선생님이 특별한 기구로 몸 여러 곳을 확인해요. 하나도 안 아프고 금방 끝나요 😊' },
+};
+
+// DEFAULT DATA — only used on very first launch
+const DEFAULT_MISSIONS = [];
+const DEFAULT_CAL_EVENTS = [];
+const DEFAULT_CHEERS = [
+  { from:'엄마 💕', msg:'앱을 처음 시작했어요! 오늘도 파이팅 🩷', time:'방금 전' },
+];
+const DEFAULT_STICKERS = [];
+
+// ============ LOAD FROM STORAGE ============
+let missions   = load(SK.missions,   DEFAULT_MISSIONS);
+let calEvents  = load(SK.calEvents,  DEFAULT_CAL_EVENTS);
+let cheers     = load(SK.cheers,     DEFAULT_CHEERS);
+let stickerBag = load(SK.stickerBag, DEFAULT_STICKERS);
+
+// ── New-day reset: if the device date changed since last open,
+//    mark yesterday's incomplete missions as "missed" (don't delete them,
+//    just unlink from today so they no longer clutter today's view).
+//    Stickers and calEvents are always kept.
+(function checkNewDay() {
+  const last = load(SK.lastDate, null);
+  if (last && last !== TODAY_STR) {
+    // Move any unfinished missions from a past date — leave them in calEvents
+    // but flag them so isTodayMission() won't show them today.
+    missions = missions.map(m => {
+      if ((m.date && m.date !== TODAY_STR) || (!m.date && last !== TODAY_STR)) {
+        return { ...m, date: m.date || last }; // pin to their original date
+      }
+      return m;
+    });
+    save(SK.missions, missions);
+    save(SK.lastDate, TODAY_STR);
+  } else if (!last) {
+    save(SK.lastDate, TODAY_STR);
+  }
+})();
+
+const HOSPITALS = [
+  { name:'서울어린이병원', dept:'소아혈액종양과 · 소아재활과', emoji:'🏥', connected:true },
+  { name:'삼성서울병원', dept:'소아청소년과 · 혈액종양팀', emoji:'🏦', connected:false },
+  { name:'서울대학교병원', dept:'어린이병원 소아혈액종양과', emoji:'🏛️', connected:false },
+  { name:'아산어린이병원', dept:'소아청소년과 · 소아재활센터', emoji:'🏥', connected:false },
+  { name:'세브란스어린이병원', dept:'소아청소년과 · 소아종양팀', emoji:'🏩', connected:false },
+];
+
+// ============ INIT ============
+function init() {
+  // Show real today in header
+  const d = new Date();
+  const days = ['일','월','화','수','목','금','토'];
+  document.getElementById('hdr-sub').textContent =
+    `${d.getMonth()+1}월 ${d.getDate()}일 ${days[d.getDay()]}요일 · 서울어린이병원`;
+
+  renderMissions();
+  renderParentMissions();
+  renderCheers();
+  renderFamilyList();
+  renderCalendar();
+  renderAllEvents();
+  renderStickerGrid();
+  updateStickerUI();
+  renderHospitalList(HOSPITALS);
+  setupIconPickers();
+  updateCheerTargets();
+  updateTodayCount();
+  startWaitTimer();
+  setTodayDefault();
+}
+
+function setTodayDefault() {
+  const d = document.getElementById('add-date');
+  if (d) d.value = TODAY_STR;
+}
+
+// ============ MODE ============
+function setMode(m) {
+  mode = m;
+  document.getElementById('btn-child').classList.toggle('active', m==='child');
+  document.getElementById('btn-parent').classList.toggle('active', m==='parent');
+  document.getElementById('view-child').style.display = m==='child'?'block':'none';
+  document.getElementById('view-parent').style.display = m==='parent'?'block':'none';
+  document.getElementById('hdr-title').textContent = m==='child'?'🌟 하준이의 오늘!':'👨‍👩 보호자 모드';
+  if (m==='parent') renderParentMissions();
+}
+
+// ============ MISSIONS ============
+function renderMissions() {
+  const list = document.getElementById('mission-list');
+  const todayMissions = missions.filter(m => isTodayMission(m));
+  if (todayMissions.length === 0) {
+    list.innerHTML = `<div class="empty-state">
+      <div class="big-emoji">🎈</div>
+      <p>오늘은 아직 미션이 없어요!<br>보호자 모드에서 일정을 추가해봐요</p>
+    </div>`;
+    updateProgress(0, 0);
+    return;
+  }
+  list.innerHTML = todayMissions.map((m, i) => {
+    const iconBg = m.iconBg || '#F5F0FF';
+    return `<div class="mc${m.done?' done':''}" id="mc-${m.id}">
+      <div class="mc-shine" style="background:${m.done?'#6BCB77':m.color}"></div>
+      ${m.done ? `<div class="stk-badge">${stickerBag[i]||'⭐'}</div>` : ''}
+      <div class="mc-row">
+        <div class="mc-icon" style="background:${iconBg}">${m.icon}</div>
+        <div class="mc-info">
+          <div class="mc-name">${m.name}</div>
+          <div class="mc-time">⏰ ${m.time||''}</div>
+          ${m.loc?`<div class="mc-loc">📍 ${m.loc}</div>`:''}
+        </div>
+        <div class="mc-check${m.done?' done':''}" onclick="completeMission('${m.id}')">${m.done?'✓':'○'}</div>
+      </div>
+      <div class="mc-actions">
+        <button class="why-btn" onclick="showWhy('${m.id}')">🔍 이 검사는 왜 해요?</button>
+      </div>
+    </div>`;
+  }).join('');
+  updateProgress(todayMissions.filter(m=>m.done).length, todayMissions.length);
+}
+
+function renderParentMissions() {
+  const el = document.getElementById('parent-mission-list');
+  if (!el) return;
+  const todayMissions = missions.filter(m => isTodayMission(m));
+  if (todayMissions.length === 0) {
+    el.innerHTML = `<div style="text-align:center;padding:16px;color:var(--muted);font-size:13px;font-weight:600;background:var(--card);border-radius:var(--r);border:1.5px solid var(--border);margin-bottom:10px">
+      아직 오늘 일정이 없어요.<br>아래 버튼으로 추가해보세요!
+    </div>`;
+    return;
+  }
+  el.innerHTML = todayMissions.map(m => `
+    <div class="card" style="padding:12px;margin-bottom:8px;display:flex;align-items:center;gap:10px">
+      <div style="font-size:22px">${m.icon}</div>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:800;color:var(--text)">${m.name}</div>
+        <div style="font-size:11px;color:var(--muted);font-weight:600">${m.time||''} ${m.loc?'· '+m.loc:''}</div>
+        <div style="font-size:10px;margin-top:3px;font-weight:700;color:${m.done?'#6BCB77':'#FF9F43'}">${m.done?'✅ 완료':'⏳ 대기 중'}</div>
+      </div>
+      <button class="del-btn" style="padding:5px 9px;font-size:11px" onclick="deleteMission('${m.id}')">삭제</button>
+    </div>`).join('');
+}
+
+function isTodayMission(m) {
+  return !m.date || m.date === TODAY_STR;
+}
+
+function completeMission(id) {
+  const m = missions.find(x => x.id === id);
+  if (!m || m.done) return;
+  m.done = true;
+
+  const newSticker = STICKERS[stickerBag.length % STICKERS.length];
+  stickerBag.push(newSticker);
+  saveAll();
+  renderStickerGrid();
+  updateStickerUI();
+  renderMissions();
+  if (mode === 'parent') renderParentMissions();
+  updateTodayCount();
+
+  const todayMs = missions.filter(x => isTodayMission(x));
+  const allDone = todayMs.length > 0 && todayMs.every(x => x.done);
+  if (allDone) {
+    setTimeout(showCelebration, 400);
+  } else {
+    showToast('🌟 미션 완료! 스티커 +1');
+  }
+}
+
+function deleteMission(id) {
+  missions = missions.filter(m => m.id !== id);
+  saveAll();
+  renderMissions();
+  renderParentMissions();
+  updateTodayCount();
+  updateCheerTargets();
+  showToast('🗑️ 일정이 삭제됐어요');
+}
+
+function updateProgress(done, total) {
+  const pct = total > 0 ? Math.round(done/total*100) : 0;
+  document.getElementById('prog-bar').style.width = pct + '%';
+  document.getElementById('prog-lbl').textContent = total > 0 ? `${done}/${total} 완료` : '일정 없음';
+  const badge = document.getElementById('today-badge');
+  if (badge) badge.textContent = total > 0 ? `${total}개` : 'TODAY';
+  const pbadge = document.getElementById('parent-today-badge');
+  if (pbadge) pbadge.textContent = total > 0 ? `${total}개` : 'TODAY';
+}
+
+function updateTodayCount() {
+  const c = missions.filter(m => isTodayMission(m)).length;
+  const el = document.getElementById('today-count');
+  if (el) el.textContent = c;
+  const todayMs = missions.filter(m => isTodayMission(m));
+  const next = todayMs.find(m => !m.done);
+  const nel = document.getElementById('next-time');
+  if (nel) nel.textContent = next ? (next.time||'-') : '-';
+}
+
+function showWhy(id) {
+  const m = missions.find(x => x.id === id);
+  if (!m) return;
+  let why;
+  if (m.customWhy) {
+    why = { emoji: m.icon, title: m.name + '은 왜 해요?', body: m.customWhy };
+  } else {
+    why = DEFAULT_WHY[m.why || m.icon] || { emoji: m.icon, title: m.name + '은 왜 해요?', body: '의사 선생님이 몸이 잘 나아지고 있는지 확인하는 검사예요! 금방 끝나요 🌟' };
+  }
+  showInfoModal(why.emoji, why.title, why.body);
+}
+
+// ============ ADD TODAY MISSION (modal) ============
+function openAddModal() {
+  document.getElementById('add-modal-bg').classList.remove('hidden');
+  document.getElementById('modal-name').value = '';
+  document.getElementById('modal-time').value = '';
+  document.getElementById('modal-loc').value = '';
+  document.getElementById('modal-why').value = '';
+  resetIconPicker('icon-picker-modal');
+}
+function closeAddModal() {
+  document.getElementById('add-modal-bg').classList.add('hidden');
+}
+
+function addTodayMission() {
+  const name = document.getElementById('modal-name').value.trim();
+  if (!name) { showToast('📝 치료명을 입력해주세요'); return; }
+  const time = document.getElementById('modal-time').value;
+  const loc = document.getElementById('modal-loc').value.trim();
+  const why = document.getElementById('modal-why').value.trim();
+  const icon = selectedIcon.modal;
+  const color = COLORS[missions.length % COLORS.length];
+  const iconBgMap = { '💉':'#FFF0F6','🩻':'#F0F4FF','💊':'#FFF8F0','👨‍⚕️':'#F0FFF4','🦴':'#F5F0FF','🔬':'#F0F8FF','🏃':'#F0FFF8','🩺':'#FFF5F0','💧':'#F0F8FF','🧬':'#F5F0FF' };
+
+  const newMission = {
+    id: 'custom_' + Date.now(),
+    icon, iconBg: iconBgMap[icon] || '#F5F0FF',
+    name,
+    time: time ? formatTime(time) : '',
+    loc, color,
+    done: false,
+    date: TODAY_STR,
+    why: icon,
+    customWhy: why
+  };
+
+  missions.push(newMission);
+  // also add to calendar events
+  calEvents.push({ id:'ce_'+Date.now(), date:TODAY_STR, name, icon, color });
+  saveAll();
+
+  renderMissions();
+  renderParentMissions();
+  renderCalendar();
+  renderAllEvents();
+  updateTodayCount();
+  updateCheerTargets();
+  closeAddModal();
+  showToast('🚀 오늘 미션에 추가됐어요!');
+}
+
+// ============ ADD FROM CALENDAR FORM ============
+function addEventFromForm() {
+  const name = document.getElementById('add-name').value.trim();
+  const date = document.getElementById('add-date').value;
+  const time = document.getElementById('add-time').value;
+  const loc = document.getElementById('add-loc').value.trim();
+  const why = document.getElementById('add-why').value.trim();
+  const icon = selectedIcon.cal;
+
+  if (!name) { showToast('📝 치료명을 입력해주세요'); return; }
+  if (!date) { showToast('📅 날짜를 선택해주세요'); return; }
+
+  const color = COLORS[calEvents.length % COLORS.length];
+  const iconBgMap = { '💉':'#FFF0F6','🩻':'#F0F4FF','💊':'#FFF8F0','👨‍⚕️':'#F0FFF4','🦴':'#F5F0FF','🔬':'#F0F8FF','🏃':'#F0FFF8','🩺':'#FFF5F0','💧':'#F0F8FF','🧬':'#F5F0FF' };
+
+  calEvents.push({ id:'ce_'+Date.now(), date, name, icon, color });
+
+  // If it's today, also add as a mission
+  if (date === TODAY_STR) {
+    missions.push({
+      id: 'cal_' + Date.now(),
+      icon, iconBg: iconBgMap[icon] || '#F5F0FF',
+      name,
+      time: time ? formatTime(time) : '',
+      loc, color,
+      done: false,
+      date: TODAY_STR,
+      why: icon,
+      customWhy: why
+    });
+    saveAll();
+    renderMissions();
+    renderParentMissions();
+    updateTodayCount();
+    updateCheerTargets();
+    showToast('🚀 오늘 미션 + 달력에 추가됐어요!');
+  } else {
+    saveAll();
+    showToast('✅ 달력에 일정이 추가됐어요!');
+  }
+
+  renderCalendar();
+  renderAllEvents();
+
+  // clear form
+  ['add-name','add-time','add-loc','add-why','add-memo'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('add-date').value = TODAY_STR;
+  resetIconPicker('icon-picker-cal');
+  switchCalTab('cal');
+}
+
+function formatTime(t) {
+  if (!t) return '';
+  const [h,m] = t.split(':').map(Number);
+  const ampm = h < 12 ? '오전' : '오후';
+  const hh = h === 0 ? 12 : h > 12 ? h-12 : h;
+  return `${ampm} ${hh}:${String(m).padStart(2,'0')}`;
+}
+
+// ============ CHEERS ============
+function renderCheers() {
+  document.getElementById('cheer-list-child').innerHTML = cheers.map(c => `
+    <div class="cheer-bubble">
+      <div class="cheer-from">${c.from}</div>
+      <div class="cheer-msg">${c.msg}</div>
+      <div class="cheer-time">${c.time}</div>
+    </div>`).join('');
+}
+
+function updateCheerTargets() {
+  const sel = document.getElementById('cheer-target');
+  if (!sel) return;
+  const todayMs = missions.filter(m => isTodayMission(m));
+  sel.innerHTML = '<option value="all">전체 응원</option>' +
+    todayMs.map(m => `<option value="${m.id}">${m.icon} ${m.name}</option>`).join('');
+}
+
+function sendCheer() {
+  const msg = document.getElementById('cheer-input').value.trim();
+  if (!msg) { showToast('💬 메모를 입력해주세요'); return; }
+  cheers.unshift({ from:'보호자 💕', msg, time:'방금 전' });
+  document.getElementById('cheer-input').value = '';
+  saveAll();
+  renderCheers();
+  showToast('💌 응원이 전달됐어요!');
+}
+
+// ============ FAMILY ============
+function renderFamilyList() {
+  document.getElementById('family-list').innerHTML = family.map(f => `
+    <div class="smember">
+      <div class="savatar">${f.icon}</div>
+      <div><div style="font-size:12px;font-weight:700">${f.name}</div><div style="font-size:10px;color:rgba(255,255,255,.75)">연결됨</div></div>
+      <div style="width:7px;height:7px;border-radius:50%;background:var(--yellow);margin-left:auto"></div>
+    </div>`).join('');
+}
+
+function showInviteModal() {
+  showInfoModal('🔗','가족 초대하기',`<div style="background:rgba(124,92,191,.07);border-radius:12px;padding:14px;margin:8px 0">
+    <div style="font-size:22px;font-weight:900;letter-spacing:4px;color:var(--purple)">HEAL-4829</div>
+    <div style="font-size:11px;color:var(--muted);margin-top:3px">초대 코드 (24시간 유효)</div>
+  </div>
+  <div style="font-size:12px;color:var(--muted)">이 코드를 가족에게 알려주면<br>같은 앱에서 일정을 함께 볼 수 있어요</div>`);
+}
+
+// ============ CALENDAR ============
+function renderCalendar() {
+  document.getElementById('cal-label').textContent = `${calY}년 ${calM+1}월`;
+  const grid = document.getElementById('cal-grid');
+  const first = new Date(calY,calM,1).getDay();
+  const days = new Date(calY,calM+1,0).getDate();
+  const prev = new Date(calY,calM,0).getDate();
+  let html = '';
+  for (let i=0;i<first;i++) html += `<div class="cal-cell other">${prev-first+i+1}</div>`;
+  for (let d=1;d<=days;d++) {
+    const ds = `${calY}-${String(calM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday = ds === TODAY_STR;
+    const hasEv = calEvents.some(e=>e.date===ds);
+    html += `<div class="cal-cell${isToday?' today':''}${hasEv?' has-ev':''}" onclick="pickDay('${ds}')">${d}</div>`;
+  }
+  const rem = (first+days)%7;
+  if (rem>0) for (let i=1;i<=7-rem;i++) html+=`<div class="cal-cell other">${i}</div>`;
+  grid.innerHTML = html;
+}
+
+function changeMonth(d) {
+  calM+=d;
+  if(calM>11){calM=0;calY++}
+  if(calM<0){calM=11;calY--}
+  renderCalendar();
+}
+
+function pickDay(ds) {
+  const evs = calEvents.filter(e=>e.date===ds);
+  if (!evs.length) return;
+  showInfoModal('📅', ds.replace(/(\d+)-(\d+)-(\d+)/,`$2월 $3일`),
+    evs.map(e=>`<div style="margin:5px 0;font-size:14px;font-weight:700">${e.icon} ${e.name}</div>`).join(''));
+}
+
+function renderAllEvents() {
+  const sorted = [...calEvents].sort((a,b)=>a.date.localeCompare(b.date));
+  const el = document.getElementById('all-events-wrap');
+  if (!el) return;
+  if (!sorted.length) { el.innerHTML='<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px;font-weight:600">등록된 일정이 없어요</div>'; return; }
+  el.innerHTML = `<div class="cal-wrap">${sorted.map(e=>`
+    <div class="ev-item">
+      <div class="ev-dot" style="background:${e.color}"></div>
+      <div class="ev-info">
+        <div class="ev-name">${e.icon} ${e.name}</div>
+        <div class="ev-date">${fmtDate(e.date)}</div>
+      </div>
+      <span class="ev-del" onclick="deleteCalEvent('${e.id}')">🗑️</span>
+    </div>`).join('')}</div>`;
+}
+
+function deleteCalEvent(id) {
+  calEvents = calEvents.filter(e=>e.id!==id);
+  saveAll();
+  renderCalendar();
+  renderAllEvents();
+  showToast('🗑️ 일정이 삭제됐어요');
+}
+
+function fmtDate(s) {
+  const d = new Date(s+'T00:00');
+  const days=['일','월','화','수','목','금','토'];
+  return `${d.getMonth()+1}월 ${d.getDate()}일 (${days[d.getDay()]})`;
+}
+
+// ============ HOSPITALS ============
+function filterHospitals(q) {
+  const f = q ? HOSPITALS.filter(h=>h.name.includes(q)||h.dept.includes(q)) : HOSPITALS;
+  renderHospitalList(f);
+}
+function renderHospitalList(list) {
+  const el = document.getElementById('hosp-results');
+  if (!el) return;
+  el.innerHTML = list.map((h,i) => `
+    <div class="h-search-item">
+      <div class="h-icon-box">${h.emoji}</div>
+      <div class="h-info"><div class="h-title">${h.name}</div><div class="h-sub">${h.dept}</div></div>
+      <button class="con-btn${h.connected?' connected':''}" onclick="connectHosp(${HOSPITALS.indexOf(h)})">${h.connected?'✓ 연결됨':'연결'}</button>
+    </div>`).join('');
+}
+function connectHosp(i) {
+  HOSPITALS[i].connected = true;
+  renderHospitalList(HOSPITALS);
+  showToast('🏥 병원이 연결됐어요!');
+}
+
+// ============ STICKERS ============
+function renderStickerGrid() {
+  const g = document.getElementById('stk-grid');
+  if (!g) return;
+  let h='';
+  for (let i=0;i<28;i++) {
+    h += i<stickerBag.length
+      ? `<div class="stk-slot earned">${stickerBag[i]}</div>`
+      : `<div class="stk-slot"></div>`;
+  }
+  g.innerHTML = h;
+}
+function updateStickerUI() {
+  const t = stickerBag.length;
+  const el = document.getElementById('stk-total');
+  if (el) el.textContent = t;
+  const pct = Math.min(100,Math.round(t/20*100));
+  const p = document.getElementById('stk-prog');
+  if (p) p.style.width = pct+'%';
+  const f = document.getElementById('stk-fraction');
+  if (f) f.textContent = t+'/20';
+  const r = document.getElementById('stk-remaining');
+  if (r) r.textContent = t>=20?'목표 달성! 🎉':`앞으로 ${20-t}개 더 모으면 돼요`;
+}
+
+// ============ ICON PICKERS ============
+function setupIconPickers() {
+  ['icon-picker-cal','icon-picker-modal'].forEach(pickerId => {
+    const key = pickerId.includes('modal') ? 'modal' : 'cal';
+    const container = document.getElementById(pickerId);
+    if (!container) return;
+    container.querySelectorAll('.icon-opt').forEach(span => {
+      span.onclick = function() {
+        container.querySelectorAll('.icon-opt').forEach(s=>s.classList.remove('selected'));
+        this.classList.add('selected');
+        selectedIcon[key] = this.dataset.icon;
+      };
+    });
+  });
+}
+function resetIconPicker(pickerId) {
+  const key = pickerId.includes('modal') ? 'modal' : 'cal';
+  const container = document.getElementById(pickerId);
+  if (!container) return;
+  container.querySelectorAll('.icon-opt').forEach((s,i)=>{
+    s.classList.toggle('selected', i===0);
+  });
+  selectedIcon[key] = '💉';
+}
+
+// ============ CELEBRATION ============
+function showCelebration() {
+  const wrap = document.getElementById('confetti');
+  const colors=['#FF6B9D','#7C5CBF','#FFE66D','#6BCB77','#5BC0EB','#FF9F43'];
+  for(let i=0;i<60;i++){
+    const p=document.createElement('div');
+    p.className='cp';
+    p.style.cssText=`left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*colors.length)]};width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${1.5+Math.random()*2}s;animation-delay:${Math.random()*.5}s;`;
+    wrap.appendChild(p);
+  }
+  setTimeout(()=>wrap.innerHTML='',3500);
+  showInfoModal('🏆','오늘 미션 모두 완료!!',
+    `<div style="font-size:34px;margin:8px 0">🎉🎊✨</div><div>정말 최고야! 오늘 힘든 미션을<br>모두 해냈어요!</div><div style="margin-top:8px;font-weight:800;color:var(--pink)">스티커 ${missions.filter(m=>isTodayMission(m)).length}개 획득! 🌟</div>`);
+  document.getElementById('modal-close-btn').textContent = '나 최고야! 🏆';
+}
+
+// ============ MODALS ============
+function showInfoModal(emoji,title,body) {
+  document.getElementById('modal-emoji').textContent = emoji;
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-body').innerHTML = body;
+  document.getElementById('modal-close-btn').textContent = '알겠어요! ✓';
+  document.getElementById('modal-bg').classList.remove('hidden');
+}
+function closeModal() { document.getElementById('modal-bg').classList.add('hidden'); }
+
+// ============ TOAST ============
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+// ============ NAV ============
+function switchScreen(s) {
+  ['today','calendar','sticker'].forEach(id=>{
+    document.getElementById('scr-'+id).style.display = id===s?'block':'none';
+    document.getElementById('nav-'+id).classList.toggle('active',id===s);
+  });
+  screen = s;
+}
+
+function switchCalTab(t) {
+  ['cal','add','hosp'].forEach(id=>{
+    document.getElementById(id+'-view').style.display = id===t?'block':'none';
+    const btn=document.getElementById('tab-'+(id==='hosp'?'hosp':id));
+    if(btn) btn.classList.toggle('active',id===t);
+  });
+}
+
+// ============ WAIT TIMER ============
+function startWaitTimer() {
+  setInterval(()=>{
+    const el=document.getElementById('wait-num');
+    if(!el) return;
+    const v=parseInt(el.textContent);
+    el.textContent=Math.max(0,v+(Math.random()>.6?-1:0));
+  },3000);
+}
+
+// ============ RESET ============
+function resetAllData() {
+  if (!confirm('정말 모든 데이터를 초기화할까요?\n일정, 스티커, 응원 메모가 모두 삭제됩니다.')) return;
+  Object.values(SK).forEach(k => localStorage.removeItem(k));
+  missions   = [];
+  calEvents  = [];
+  cheers     = [{ from:'앱 초기화 완료 ✅', msg:'데이터가 초기화됐어요. 새로 시작해봐요! 🌟', time:'방금 전' }];
+  stickerBag = [];
+  renderMissions();
+  renderParentMissions();
+  renderCheers();
+  renderStickerGrid();
+  updateStickerUI();
+  renderCalendar();
+  renderAllEvents();
+  updateTodayCount();
+  updateCheerTargets();
+  showToast('🗑️ 초기화 완료!');
+}
+
+init();
+</script>
+</body>
+</html>
